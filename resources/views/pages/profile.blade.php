@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Profil Mahasiswa - ' . $student['name'] . ' · ' . $student['specialty'])
+@section('title', 'Profil Mahasiswa - ' . $student['name'] . ' · ' . ($student['specialty'] ?? 'PBKK'))
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
@@ -12,6 +12,7 @@
         <span class="text-slate-800 font-semibold">Profil Mahasiswa</span>
     </nav>
 
+    @if ($isMikail)
     {{-- Student Profile Header / Hero Card --}}
     <div class="rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div class="flex items-center gap-5">
@@ -265,6 +266,144 @@
         </div>
 
     </div>
+    @else
+    {{-- Clean User Profile for Authenticated Non-Mikail Users --}}
+    <div class="rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-center gap-5">
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-indigo-700 to-blue-600 text-white flex items-center justify-center font-bold text-2xl shadow-md shrink-0">
+                {{ $student['avatar_initials'] ?? 'U' }}
+            </div>
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        {{ $student['name'] }}
+                    </h1>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        Akun Terverifikasi
+                    </span>
+                </div>
+                <p class="text-sm font-mono font-medium text-blue-700">
+                    {{ $student['email'] }}
+                </p>
+                <p class="text-xs text-slate-600">
+                    Primary Key: <code class="font-mono text-slate-800 font-semibold">users.id #{{ $currentUser->id }}</code> &bull; Terdaftar di Basis Data MySQL
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5 self-stretch md:self-center justify-start md:justify-end border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
+            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-xs">
+                <span>🛡️</span> Dashboard Saya
+            </a>
+        </div>
+    </div>
+
+    {{-- Two Column Layout: User Details & Project List --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {{-- Left Column: User Summary Card --}}
+        <div class="space-y-6">
+            <x-info-card
+                title="Informasi Akun"
+                subtitle="Identitas & Kredensial Pengguna"
+                icon="user"
+                badge="Sesi Aktif"
+                badgeColor="indigo">
+
+                <div class="space-y-3 pt-1 text-xs">
+                    <div>
+                        <span class="text-slate-500 font-medium block">Nama Lengkap</span>
+                        <span class="text-slate-900 font-semibold text-sm">{{ $student['name'] }}</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-medium block">Alamat Email</span>
+                        <span class="text-blue-700 font-mono font-medium text-xs">{{ $student['email'] }}</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-medium block">ID Pengguna (Primary Key)</span>
+                        <span class="text-slate-900 font-mono font-bold">#{{ $currentUser->id }}</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-medium block">Jumlah Proyek Terkait</span>
+                        <span class="text-indigo-700 font-bold text-sm">{{ $userProjects->count() }} Proyek (HasMany)</span>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 font-medium block">Waktu Pendaftaran</span>
+                        <span class="text-slate-700">{{ $currentUser->created_at ? $currentUser->created_at->format('d M Y, H:i') : 'Saat Seeding' }}</span>
+                    </div>
+                </div>
+
+                <x-slot:footer>
+                    <div class="text-[11px] text-slate-500">
+                        Terkoneksi ke tabel <code>users</code> via Laravel Breeze
+                    </div>
+                </x-slot:footer>
+            </x-info-card>
+        </div>
+
+        {{-- Right Column: Projects from Eloquent --}}
+        <div class="lg:col-span-2 space-y-6">
+            <x-info-card
+                title="Proposal Proyek Agentic AI"
+                subtitle="Daftar Proyek Terhubung dengan Akun Anda"
+                icon="cpu"
+                badge="{{ $userProjects->count() }} Proyek"
+                badgeColor="blue"
+                variant="default">
+
+                @if ($userProjects->isEmpty())
+                    <div class="text-center py-8 space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                            📭
+                        </div>
+                        <h4 class="text-sm font-semibold text-slate-900">Belum Ada Proyek</h4>
+                        <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                            Akun Anda saat ini belum memiliki proposal proyek yang terdaftar di basis data.
+                        </p>
+                        <div class="pt-2">
+                            <a href="{{ route('idea') }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                                Ajukan Ide Baru &rarr;
+                            </a>
+                        </div>
+                    </div>
+                @else
+                    <div class="space-y-4 pt-2">
+                        @foreach ($userProjects as $proj)
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700">
+                                            🤖 {{ $proj->tema_agent }}
+                                        </span>
+                                        <h4 class="text-sm font-bold text-slate-900 pt-1 leading-snug">
+                                            {{ $proj->judul }}
+                                        </h4>
+                                    </div>
+                                    <span class="text-[11px] font-mono text-slate-400">#{{ $proj->id }}</span>
+                                </div>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    {{ $proj->deskripsi ?? 'Tidak ada deskripsi.' }}
+                                </p>
+                                <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Dibuat: {{ $proj->created_at->format('d M Y, H:i') }}</span>
+                                    <span class="font-mono text-slate-500">
+                                        Key: {{ $proj->api_key_secure ? Str::limit($proj->api_key_secure, 16, '...') : '(null)' }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <x-slot:footer>
+                    <div class="flex items-center justify-between text-xs text-slate-500">
+                        <span>Terkoneksi Foreign Key <code>projects.user_id</code></span>
+                        <a href="{{ route('dashboard') }}" class="text-blue-600 hover:underline font-semibold">Buka Dashboard &rarr;</a>
+                    </div>
+                </x-slot:footer>
+            </x-info-card>
+        </div>
+    </div>
+    @endif
 
 </div>
 @endsection

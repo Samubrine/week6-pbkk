@@ -18,7 +18,7 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home', 'home.alias')">
                         {{ __('Beranda') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('profile')" :active="request()->routeIs('profile')">
+                    <x-nav-link :href="route('mahasiswa.profile')" :active="request()->routeIs('mahasiswa.profile')">
                         {{ __('Profil Mahasiswa') }}
                     </x-nav-link>
                     <x-nav-link :href="route('idea')" :active="request()->routeIs('idea')">

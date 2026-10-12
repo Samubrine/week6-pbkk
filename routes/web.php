@@ -19,12 +19,13 @@ use Illuminate\Support\Facades\Route;
 | 3. Auth Routes (Breeze login/register/logout/password)
 */
 
-// Public academic showcase routes
-Route::get('/', [PageController::class, 'home'])->name('home');
-Route::get('/beranda', [PageController::class, 'home'])->name('home.alias');
-Route::get('/profil-mahasiswa', [PageController::class, 'profile'])->name('profile');
-Route::get('/ide-agent', [PageController::class, 'idea'])->name('idea');
-Route::post('/ide-agent', [PageController::class, 'submitIdea'])->name('idea.submit');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', [PageController::class, 'home'])->name('home');
+    Route::get('/beranda', [PageController::class, 'home'])->name('home.alias');
+    Route::get('/profil-mahasiswa', [PageController::class, 'profile'])->name('mahasiswa.profile');
+    Route::get('/ide-agent', [PageController::class, 'idea'])->name('idea');
+    Route::post('/ide-agent', [PageController::class, 'submitIdea'])->name('idea.submit');
+});
 
 // Protected dashboard route (Eloquent user projects query)
 Route::get('/dashboard', [DashboardController::class, 'index'])

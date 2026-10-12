@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Beranda - ' . $student['name'] . ' · ' . $student['specialty'])
+@section('title', 'Beranda - ' . $student['name'] . ' · ' . ($student['specialty'] ?? 'PBKK'))
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
@@ -20,11 +20,12 @@
     @else
         <x-status-banner type="info" title="Informasi Sistem PBKK">
             <p class="text-xs sm:text-sm text-blue-900 leading-relaxed">
-                Aplikasi ini menyajikan profil akademik mahasiswa Departemen Teknik Informatika ITS dengan fokus pada <strong class="font-semibold">System Architecture</strong> dan showcase proyek <strong class="font-semibold">Security Agent Harness</strong> (Pertemuan 4 PBKK). Coba tambahkan parameter URL <code class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-mono text-xs">/beranda?user=NamaAnda</code> untuk melihat sapaan dinamis.
+                Portal Profil Akademik &amp; Basis Data PBKK Pertemuan 6 Departemen Teknik Informatika ITS. Coba tambahkan parameter URL <code class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-mono text-xs">/beranda?user=NamaAnda</code> untuk melihat sapaan dinamis.
             </p>
         </x-status-banner>
     @endif
 
+    @if ($isMikail)
     {{-- Refined Hero Section: Bento Header --}}
     <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-8 sm:p-12 shadow-xl border border-slate-800/80">
         {{-- Background decorative radial grid --}}
@@ -55,7 +56,7 @@
             </p>
 
             <div class="flex flex-wrap items-center gap-3 pt-2">
-                <a href="{{ route('profile') }}"
+                <a href="{{ route('mahasiswa.profile') }}"
                    class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     Lihat Profil Akademik
@@ -124,7 +125,7 @@
                 </div>
 
                 <x-slot:action>
-                    <a href="{{ route('profile') }}" class="text-xs font-semibold text-blue-700 hover:underline flex items-center gap-1 group">
+                    <a href="{{ route('mahasiswa.profile') }}" class="text-xs font-semibold text-blue-700 hover:underline flex items-center gap-1 group">
                         Detail Profil
                         <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                     </a>
@@ -225,7 +226,7 @@
                 </h3>
                 <p class="text-xs text-slate-500">Mata kuliah yang sedang aktif ditempuh di Departemen Teknik Informatika ITS.</p>
             </div>
-            <a href="{{ route('profile') }}" class="text-xs font-semibold text-blue-700 hover:underline flex items-center gap-1 self-start sm:self-auto">
+            <a href="{{ route('mahasiswa.profile') }}" class="text-xs font-semibold text-blue-700 hover:underline flex items-center gap-1 self-start sm:self-auto">
                 Lihat Detail Jadwal &rarr;
             </a>
         </div>
@@ -272,6 +273,116 @@
             </div>
         </div>
     </section>
+    @else
+    {{-- Personalized Hero for Authenticated Non-Mikail User --}}
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-8 sm:p-12 shadow-xl border border-slate-800/80">
+        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:20px_20px]"></div>
+
+        <div class="relative z-10 max-w-4xl space-y-6">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/20 text-cyan-300 text-xs font-semibold border border-cyan-500/30">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Akun Terautentikasi ({{ $student['email'] }})
+                </span>
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-800/80 text-slate-300 text-xs font-medium border border-slate-700">
+                    🎓 Pemrograman Berbasis Kerangka Kerja (PBKK)
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white">
+                    Selamat Datang, {{ $student['name'] }}
+                </h1>
+                <p class="text-base sm:text-xl font-medium text-cyan-400">
+                    Portal Portofolio &amp; Pemodelan Basis Data Eloquent ORM
+                </p>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
+                Anda terdaftar sebagai pengguna resmi pada sistem ini. Melalui halaman ini, Anda dapat mengakses profil pribadi, meninjau proposal proyek Agentic AI yang Anda miliki, serta mengelola kueri relasional secara aman.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-3 pt-2">
+                <a href="{{ route('mahasiswa.profile') }}"
+                   class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Lihat Profil Saya
+                </a>
+
+                <a href="{{ route('dashboard') }}"
+                   class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    Dashboard Proyek
+                </a>
+
+                <a href="{{ route('idea') }}"
+                   class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-100 font-semibold text-sm border border-slate-700 transition-all">
+                    <span>💡</span>
+                    <span>Ajukan Ide Riset</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {{-- User Projects Section --}}
+    <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Daftar Proyek Terdaftar Milik Anda</h2>
+                <p class="text-sm text-slate-600 mt-1">Data proyek ditarik secara dinamis dari tabel <code class="text-blue-700 bg-blue-50 px-1 py-0.5 rounded">projects</code> via relasi Eloquent <code class="text-blue-700 bg-blue-50 px-1 py-0.5 rounded">User::projects()</code>.</p>
+            </div>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto">
+                {{ $userProjects->count() }} Proyek
+            </span>
+        </div>
+
+        @if ($userProjects->isEmpty())
+            <div class="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-3 shadow-xs">
+                <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-xl text-slate-400">
+                    📭
+                </div>
+                <h3 class="text-base font-semibold text-slate-900">Belum Ada Proyek Terdaftar</h3>
+                <p class="text-xs text-slate-500 max-w-md mx-auto">
+                    Akun Anda belum memiliki proposal proyek Agentic AI di basis data. Anda dapat mengajukan ide riset baru melalui formulir Ide Agent.
+                </p>
+                <div class="pt-2">
+                    <a href="{{ route('idea') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors">
+                        Ajukan Ide Riset &rarr;
+                    </a>
+                </div>
+            </div>
+        @else
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @foreach ($userProjects as $proj)
+                    <div class="p-6 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all space-y-4 shadow-xs">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="space-y-1">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                    🤖 {{ $proj->tema_agent }}
+                                </span>
+                                <h4 class="text-base font-bold text-slate-900 pt-1 leading-snug">
+                                    {{ $proj->judul }}
+                                </h4>
+                            </div>
+                            <span class="text-[11px] font-mono text-slate-400 whitespace-nowrap">
+                                #{{ $proj->id }}
+                            </span>
+                        </div>
+
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            {{ $proj->deskripsi ?? 'Tidak ada deskripsi yang dilampirkan.' }}
+                        </p>
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Dibuat: {{ $proj->created_at->format('d M Y, H:i') }}</span>
+                            <span class="text-emerald-600 font-semibold">Tersimpan di DB</span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </section>
+    @endif
 
 </div>
 @endsection

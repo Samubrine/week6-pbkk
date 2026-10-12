@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'judul' => 'Evaluasi Otomasi Agentic AI Kurikulum Teknik Informatika',
             'deskripsi' => 'Platform pengujian komparatif performa model otonom lokal (Ollama) dalam asistensi penilaian tugas pemrograman berbasis kerangka kerja dan tinjauan keamanan kode.',
             'tema_agent' => 'Ollama',
-            'api_key_secure' => 'sk-pbkk-evaluator-' . hash('sha256', 'dosen-secret-key-1'),
+            'api_key_secure' => 'sk-pbkk-evaluator-'.hash('sha256', 'dosen-secret-key-1'),
             'user_id' => $dosen->id,
         ]);
 
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'judul' => 'Sistem Verifikasi Kebijakan Multi-Agent ITS',
             'deskripsi' => 'Orkestrasi agen otonom untuk validasi kepatuhan tata kelola akademik institusi menggunakan LLM terstruktur dan deterministic necessity gate.',
             'tema_agent' => 'Local LLM',
-            'api_key_secure' => 'sk-pbkk-evaluator-' . hash('sha256', 'dosen-secret-key-2'),
+            'api_key_secure' => 'sk-pbkk-evaluator-'.hash('sha256', 'dosen-secret-key-2'),
             'user_id' => $dosen->id,
         ]);
 
@@ -53,7 +53,7 @@ class DatabaseSeeder extends Seeder
             'judul' => 'Security Agent Harness: Local-First Investigation System',
             'deskripsi' => 'Local-first agentic security investigation harness yang menggabungkan perencanaan hipotesis berbasis model lokal (probabilistic brain) dengan runtime eksekusi berpagar kebijakan deterministik (deterministic spine).',
             'tema_agent' => 'Local LLM',
-            'api_key_secure' => 'sk-pbkk-student-' . hash('sha256', 'student-secure-key-1'),
+            'api_key_secure' => 'sk-pbkk-student-'.hash('sha256', 'student-secure-key-1'),
             'user_id' => $student->id,
         ]);
 
@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
             'judul' => 'Ollama-Powered Immutable Evidence & Forensic Replay',
             'deskripsi' => 'Subsistem pencatatan artefak investigasi insiden keamanan yang dapat di-replay secara deterministik untuk verifikasi evaluasi ground truth tanpa risiko kebocoran data.',
             'tema_agent' => 'Ollama',
-            'api_key_secure' => 'sk-pbkk-student-' . hash('sha256', 'student-secure-key-2'),
+            'api_key_secure' => 'sk-pbkk-student-'.hash('sha256', 'student-secure-key-2'),
             'user_id' => $student->id,
         ]);
 

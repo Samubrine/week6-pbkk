@@ -29,7 +29,7 @@
     $mobileMenuBg = $isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white border-slate-100 text-slate-800';
 
     $isHomeActive = request()->routeIs('home*') || request()->is('/') || request()->is('beranda');
-    $isProfileActive = request()->routeIs('profile*') || request()->is('profil-mahasiswa');
+    $isProfileActive = request()->routeIs('mahasiswa.profile*') || request()->is('profil-mahasiswa');
     $isIdeaActive = request()->routeIs('idea*') || request()->is('ide-agent');
 @endphp
 <body class="min-h-full flex flex-col font-sans selection:bg-blue-600 selection:text-white transition-colors duration-200 {{ $bodyBg }}">
@@ -48,7 +48,7 @@
                                 PBKK • Profil Akademik
                             </span>
                             <span class="text-[11px] sm:text-xs font-medium mt-1 {{ $brandSub }}">
-                                Teknik Informatika ITS • Mikail Ibrahim Hakim
+                                Teknik Informatika ITS • {{ Auth::user()?->name ?? 'Mikail Ibrahim Hakim' }}
                             </span>
                         </div>
                     </a>
@@ -61,7 +61,7 @@
                         Beranda
                     </a>
 
-                    <a href="{{ route('profile') }}"
+                    <a href="{{ route('mahasiswa.profile') }}"
                        class="px-3.5 py-2 rounded-xl text-sm font-medium transition-all {{ $isProfileActive ? ($isDarkMode ? 'bg-slate-800 text-cyan-300 font-semibold shadow-xs border border-cyan-800/40' : 'bg-blue-50 text-blue-700 font-semibold shadow-xs') : ($isDarkMode ? 'text-slate-300 hover:text-white hover:bg-slate-800' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100') }}">
                         Profil Mahasiswa
                     </a>
@@ -86,15 +86,6 @@
                                 <span>☀️</span>
                                 <span class="hidden lg:inline">Light</span>
                             </a>
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-xs">
-                            <span>🛡️</span> Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition-colors shadow-xs">
-                            <span>🔑</span> Masuk
-                        </a>
-                    @endauth
                             <a href="{{ route('idea', ['mode' => 'dark']) }}"
                                title="Tampilan Dark Mode"
                                class="px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all {{ $isDarkMode ? 'bg-cyan-950 text-cyan-300 shadow-xs border border-cyan-700/50' : 'text-slate-600 hover:text-slate-900' }}">
@@ -110,9 +101,13 @@
                         </a>
                     @endif
 
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-xs">
+                            <span>🛡️</span> Dashboard
+                        </a>
+
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold {{ $isDarkMode ? 'bg-slate-800 text-slate-200 border border-slate-700' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        PBKK W4
+                        PBKK W6
                     </span>
                 </div>
 
@@ -136,7 +131,7 @@
                     <span class="text-base">🏠</span>
                     <span>Beranda</span>
                 </a>
-                <a href="{{ route('profile') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ $isProfileActive ? ($isDarkMode ? 'bg-slate-800 text-cyan-300 font-semibold' : 'bg-blue-50 text-blue-700 font-semibold') : ($isDarkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100') }}">
+                <a href="{{ route('mahasiswa.profile') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ $isProfileActive ? ($isDarkMode ? 'bg-slate-800 text-cyan-300 font-semibold' : 'bg-blue-50 text-blue-700 font-semibold') : ($isDarkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100') }}">
                     <span class="text-base">🎓</span>
                     <span>Profil Mahasiswa</span>
                 </a>
@@ -154,6 +149,12 @@
                     <a href="{{ route('idea', $isDarkMode ? [] : ['mode' => 'dark']) }}" class="font-semibold underline {{ $isDarkMode ? 'text-cyan-300' : 'text-blue-700' }}">
                         {{ $isDarkMode ? 'Beralih ke Light Mode ☀️' : 'Beralih ke Dark Mode 🌙' }}
                     </a>
+                </div>
+                <div class="pt-2 border-t {{ $isDarkMode ? 'border-slate-800' : 'border-slate-100' }} px-3.5 space-y-1.5">
+                        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold {{ $isDarkMode ? 'bg-indigo-900 text-indigo-200' : 'bg-indigo-50 text-indigo-700' }}">
+                            <span class="text-base">🛡️</span>
+                            <span>Dashboard</span>
+                        </a>
                 </div>
             </div>
         </div>
@@ -194,7 +195,7 @@
                     </h5>
                     <p class="text-xs leading-relaxed {{ $footerSub }}">
                         <strong>Pemrograman Berbasis Kerangka Kerja (PBKK)</strong><br>
-                        Tugas 4: Membangun Aplikasi Multi-View Profil Akademik<br>
+                        Tugas 6: Secure Academic Portal Database &amp; Eloquent Modeling<br>
                         Teknologi: Laravel 11/12 • Blade • Tailwind CSS • Vite
                     </p>
                 </div>
@@ -206,7 +207,7 @@
                     </h5>
                     <div class="flex flex-wrap gap-2 text-xs">
                         <a href="{{ route('home') }}" class="px-2.5 py-1.5 rounded-lg transition-colors {{ $footerLink }}">Beranda</a>
-                        <a href="{{ route('profile') }}" class="px-2.5 py-1.5 rounded-lg transition-colors {{ $footerLink }}">Profil Mahasiswa</a>
+                        <a href="{{ route('mahasiswa.profile') }}" class="px-2.5 py-1.5 rounded-lg transition-colors {{ $footerLink }}">Profil Mahasiswa</a>
                         <a href="{{ route('idea') }}" class="px-2.5 py-1.5 rounded-lg transition-colors {{ $footerLink }}">Ide Agent (Light)</a>
                         <a href="{{ route('idea', ['mode' => 'dark']) }}" class="px-2.5 py-1.5 rounded-lg transition-colors font-semibold {{ $isDarkMode ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : 'bg-slate-900 text-slate-100 hover:bg-slate-800' }}">🌙 Dark Mode</a>
                     </div>
@@ -215,7 +216,7 @@
 
             {{-- Bottom copyright line --}}
             <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs {{ $footerSub }}">
-                <p>&copy; 2026 Mikail Ibrahim Hakim • Departemen Teknik Informatika ITS. Hak Cipta Dilindungi.</p>
+                <p>&copy; 2026 {{ Auth::user()?->name ?? 'Mikail Ibrahim Hakim' }} • Departemen Teknik Informatika ITS. Hak Cipta Dilindungi.</p>
                 <div class="flex items-center gap-3">
                     <span>Arsitektur MVC &amp; Blade Components</span>
                     <span>•</span>

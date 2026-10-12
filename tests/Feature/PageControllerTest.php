@@ -2,16 +2,44 @@
 
 namespace Tests\Feature;
 
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PageControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected User $mikail;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->mikail = User::factory()->create([
+            'name' => config('academic.student.name'),
+            'email' => config('academic.student.email'),
+        ]);
+    }
+
+    /**
+     * Test guests are redirected to login from protected public routes.
+     */
+    public function test_guest_is_redirected_to_login_from_pages(): void
+    {
+        $this->get('/')->assertRedirect('/login');
+        $this->get('/beranda')->assertRedirect('/login');
+        $this->get('/profil-mahasiswa')->assertRedirect('/login');
+        $this->get('/ide-agent')->assertRedirect('/login');
+    }
+
     /**
      * Test Beranda (Home /) returns HTTP 200 and renders authoritative info.
      */
     public function test_beranda_page_returns_successful_response(): void
     {
-        $response = $this->get('/');
+        $response = $this->actingAs($this->mikail)->get('/');
 
         $response->assertStatus(200);
         $response->assertSee(config('academic.student.name'));
@@ -25,7 +53,7 @@ class PageControllerTest extends TestCase
      */
     public function test_beranda_alias_route_returns_successful_response(): void
     {
-        $response = $this->get('/beranda');
+        $response = $this->actingAs($this->mikail)->get('/beranda');
 
         $response->assertStatus(200);
         $response->assertSee(config('academic.student.name'));
@@ -39,14 +67,14 @@ class PageControllerTest extends TestCase
     public function test_dynamic_user_status_greeting_on_beranda(): void
     {
         // Test canonical /?user=Andi
-        $responseRoot = $this->get('/?user=Andi');
+        $responseRoot = $this->actingAs($this->mikail)->get('/?user=Andi');
         $responseRoot->assertStatus(200);
         $responseRoot->assertSee('Selamat datang,');
         $responseRoot->assertSee('Andi');
         $responseRoot->assertSee('Sapaan Pengunjung');
 
         // Test alias /beranda?user=Budi
-        $responseAlias = $this->get('/beranda?user=Budi');
+        $responseAlias = $this->actingAs($this->mikail)->get('/beranda?user=Budi');
         $responseAlias->assertStatus(200);
         $responseAlias->assertSee('Selamat datang,');
         $responseAlias->assertSee('Budi');
@@ -58,7 +86,7 @@ class PageControllerTest extends TestCase
      */
     public function test_profil_mahasiswa_page_returns_authoritative_student_data(): void
     {
-        $response = $this->get('/profil-mahasiswa');
+        $response = $this->actingAs($this->mikail)->get('/profil-mahasiswa');
 
         $response->assertStatus(200);
         $response->assertSee(config('academic.student.name'));
@@ -93,7 +121,7 @@ class PageControllerTest extends TestCase
      */
     public function test_ide_agent_page_returns_security_agent_harness_in_light_mode(): void
     {
-        $response = $this->get('/ide-agent');
+        $response = $this->actingAs($this->mikail)->get('/ide-agent');
 
         $response->assertStatus(200);
         $response->assertSee('Security Agent Harness');
@@ -114,7 +142,7 @@ class PageControllerTest extends TestCase
      */
     public function test_bonus_challenge_dynamic_dark_mode_on_ide_agent(): void
     {
-        $response = $this->get('/ide-agent?mode=dark');
+        $response = $this->actingAs($this->mikail)->get('/ide-agent?mode=dark');
 
         $response->assertStatus(200);
         $response->assertSee('Bonus Challenge 1: Dark Mode Aktif');
@@ -127,7 +155,7 @@ class PageControllerTest extends TestCase
      */
     public function test_idea_form_validation_rejects_empty_submission(): void
     {
-        $response = $this->post('/ide-agent', []);
+        $response = $this->actingAs($this->mikail)->post('/ide-agent', []);
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors(['name', 'email', 'title', 'category', 'description']);
@@ -146,7 +174,7 @@ class PageControllerTest extends TestCase
             'description' => 'Menambahkan modul skill korelasi DNS log lokal yang terikat pada batasan policy harness.',
         ];
 
-        $response = $this->post('/ide-agent', $payload);
+        $response = $this->actingAs($this->mikail)->post('/ide-agent', $payload);
 
         $response->assertStatus(302);
         $response->assertRedirect('/ide-agent');
@@ -173,9 +201,65 @@ class PageControllerTest extends TestCase
             'description' => 'Penyaringan otorisasi pemanggilan provider proses lokal melalui Model Context Protocol.',
         ];
 
-        $response = $this->post('/ide-agent', $payload);
+        $response = $this->actingAs($this->mikail)->post('/ide-agent', $payload);
 
         $response->assertStatus(302);
         $response->assertRedirect(route('idea', ['mode' => 'dark']));
+    }
+
+    /**
+     * Test a non-Mikail user (e.g. Tosin) sees their own identity and their own projects.
+     */
+    public function test_non_mikail_user_sees_own_profile_and_projects(): void
+    {
+        $tosin = User::factory()->create([
+            'name' => 'Tosin Oseni',
+            'email' => 'tosin@example.com',
+        ]);
+
+        $tosinProject = Project::create([
+            'judul' => 'Tosin Autonomous Agent Framework',
+            'deskripsi' => 'Framework agen otonom khusus untuk evaluasi performa model bahasa lokal.',
+            'tema_agent' => 'Ollama',
+            'api_key_secure' => 'sk-test-tosin-key',
+            'user_id' => $tosin->id,
+        ]);
+
+        // 1. Profil Mahasiswa page
+        $profileResponse = $this->actingAs($tosin)->get('/profil-mahasiswa');
+        $profileResponse->assertOk();
+        $profileResponse->assertSee('Tosin Oseni');
+        $profileResponse->assertSee('tosin@example.com');
+        $profileResponse->assertSee('Tosin Autonomous Agent Framework');
+        $profileResponse->assertDontSee('Finalis GEMASTIK 2026');
+        $profileResponse->assertDontSee('5025241046');
+
+        // 2. Beranda page
+        $homeResponse = $this->actingAs($tosin)->get('/');
+        $homeResponse->assertOk();
+        $homeResponse->assertSee('Tosin Oseni');
+        $homeResponse->assertSee('Tosin Autonomous Agent Framework');
+
+        // 3. Ide Agent page
+        $ideaResponse = $this->actingAs($tosin)->get('/ide-agent');
+        $ideaResponse->assertOk();
+        $ideaResponse->assertSee('Tosin Oseni');
+        $ideaResponse->assertSee('Tosin Autonomous Agent Framework');
+    }
+
+    /**
+     * Test newly registered user with zero projects sees appropriate empty state.
+     */
+    public function test_new_user_with_no_projects_sees_empty_state(): void
+    {
+        $newUser = User::factory()->create([
+            'name' => 'Mahasiswa Baru PBKK',
+            'email' => 'maba@student.its.ac.id',
+        ]);
+
+        $response = $this->actingAs($newUser)->get('/profil-mahasiswa');
+        $response->assertOk();
+        $response->assertSee('Mahasiswa Baru PBKK');
+        $response->assertSee('Belum Ada Proyek');
     }
 }

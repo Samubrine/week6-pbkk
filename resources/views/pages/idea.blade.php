@@ -72,6 +72,7 @@
             </x-status-banner>
         @endif
 
+        @if ($isMikail)
         {{-- Hero Presentation of Security Agent Harness --}}
         <section class="rounded-3xl border p-8 sm:p-12 relative overflow-hidden transition-all duration-300 {{ $heroBoxClass }}">
             <div class="relative z-10 max-w-4xl space-y-5">
@@ -314,6 +315,96 @@
                 </div>
             </div>
         </div>
+        @else
+        {{-- Hero for Non-Mikail Authenticated User --}}
+        <section class="rounded-3xl border p-8 sm:p-12 relative overflow-hidden transition-all duration-300 {{ $heroBoxClass }}">
+            <div class="relative z-10 max-w-4xl space-y-5">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $isDark ? 'bg-cyan-950 text-cyan-300 border border-cyan-700/50' : 'bg-indigo-100 text-indigo-800 border border-indigo-200' }}">
+                        <span class="w-2 h-2 rounded-full {{ $isDark ? 'bg-cyan-400' : 'bg-indigo-600' }} animate-pulse"></span>
+                        {{ $project['type'] ?? 'Daftar Proyek Pengguna' }}
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $isDark ? 'bg-slate-800 text-slate-300 border border-slate-700' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">
+                        {{ $project['status'] ?? 'Tersimpan di Basis Data MySQL' }}
+                    </span>
+                </div>
+
+                <div class="space-y-2">
+                    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight {{ $headingClass }}">
+                        {{ $project['title'] }}
+                    </h1>
+                    <p class="text-base sm:text-lg font-medium text-cyan-400">
+                        {{ $project['subtitle'] }}
+                    </p>
+                </div>
+
+                <p class="text-sm sm:text-base leading-relaxed {{ $subtextClass }}">
+                    {{ $project['description'] }}
+                </p>
+
+                <div class="flex items-center gap-3 pt-2 flex-wrap">
+                    <a href="{{ route('dashboard') }}"
+                       class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+                        <span>🛡️</span>
+                        <span>Kelola Proyek di Dashboard &rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        {{-- Section: User's Own Projects --}}
+        <section class="space-y-6">
+            <div class="border-b pb-3 {{ $isDark ? 'border-slate-800' : 'border-slate-200' }}">
+                <h2 class="text-2xl font-bold tracking-tight {{ $sectionTitleClass }}">
+                    Proposal Proyek Agentic AI Milik Anda
+                </h2>
+                <p class="text-xs sm:text-sm {{ $isDark ? 'text-slate-400' : 'text-slate-600' }} mt-1">
+                    Daftar proposal proyek yang tersimpan atas nama akun Anda pada tabel <code>projects</code>.
+                </p>
+            </div>
+
+            @if ($userProjects->isEmpty())
+                <div class="p-8 rounded-3xl border text-center space-y-3 {{ $formBgClass }}">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl text-slate-400">
+                        📭
+                    </div>
+                    <h3 class="text-base font-semibold {{ $headingClass }}">Belum Ada Proposal Proyek</h3>
+                    <p class="text-xs {{ $subtextClass }} max-w-md mx-auto">
+                        Anda belum memiliki proposal ide proyek AI di basis data. Silakan isi formulir di bawah ini untuk mengajukan ide riset baru.
+                    </p>
+                </div>
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach ($userProjects as $proj)
+                        <div class="p-6 rounded-2xl border space-y-4 {{ $isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200' }}">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $isDark ? 'bg-cyan-950 text-cyan-300 border border-cyan-800' : 'bg-indigo-50 text-indigo-700 border border-indigo-200' }}">
+                                        🤖 {{ $proj->tema_agent }}
+                                    </span>
+                                    <h4 class="text-base font-bold {{ $headingClass }} pt-1 leading-snug">
+                                        {{ $proj->judul }}
+                                    </h4>
+                                </div>
+                                <span class="text-[11px] font-mono text-slate-400 whitespace-nowrap">#{{ $proj->id }}</span>
+                            </div>
+
+                            <p class="text-xs sm:text-sm leading-relaxed {{ $subtextClass }}">
+                                {{ $proj->deskripsi ?? 'Tidak ada deskripsi yang dilampirkan.' }}
+                            </p>
+
+                            <div class="pt-3 border-t {{ $isDark ? 'border-slate-800' : 'border-slate-100' }} flex items-center justify-between text-[11px] text-slate-400">
+                                <span>Dibuat: {{ $proj->created_at->format('d M Y, H:i') }}</span>
+                                <span class="font-mono">
+                                    Key: {{ $proj->api_key_secure ? Str::limit($proj->api_key_secure, 16, '...') : '(null)' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+        @endif
 
         {{-- Section 5: Idea Submission / Feedback Form --}}
         <section class="space-y-6 pt-4">
@@ -343,7 +434,7 @@
                                 type="text"
                                 id="name"
                                 name="name"
-                                value="{{ old('name') }}"
+                                value="{{ old('name', Auth::user()?->name) }}"
                                 placeholder="Contoh: Mikail Ibrahim Hakim"
                                 required
                                 class="w-full px-3.5 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 {{ $inputClass }} @error('name') border-rose-500 focus:border-rose-500 focus:ring-rose-500/20 @enderror">
@@ -361,7 +452,7 @@
                                 type="email"
                                 id="email"
                                 name="email"
-                                value="{{ old('email') }}"
+                                value="{{ old('email', Auth::user()?->email) }}"
                                 placeholder="nama@student.its.ac.id"
                                 required
                                 class="w-full px-3.5 py-2.5 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2 {{ $inputClass }} @error('email') border-rose-500 focus:border-rose-500 focus:ring-rose-500/20 @enderror">

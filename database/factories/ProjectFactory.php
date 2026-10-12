@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Project>
+ * @extends Factory<Project>
  */
 class ProjectFactory extends Factory
 {
@@ -31,14 +31,14 @@ class ProjectFactory extends Factory
             'Deterministic Policy & Guardrails Enforcer',
             'Multi-Agent System for Threat Surface Reconnaissance',
             'Local-First Evidence Replay & Forensic Auditor',
-            'Adaptive Learning Assistant with RAG Pipeline'
+            'Adaptive Learning Assistant with RAG Pipeline',
         ];
 
         return [
-            'judul' => fake()->randomElement($focusAreas) . ' - ' . fake()->words(3, true),
+            'judul' => fake()->randomElement($focusAreas).' - '.fake()->words(3, true),
             'deskripsi' => fake()->paragraphs(2, true),
             'tema_agent' => fake()->randomElement($aiThemes),
-            'api_key_secure' => 'sk-pbkk-' . fake()->sha256(),
+            'api_key_secure' => 'sk-pbkk-'.fake()->sha256(),
             'user_id' => User::factory(),
         ];
     }

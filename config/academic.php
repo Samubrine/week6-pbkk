@@ -26,7 +26,7 @@ return [
         'linkedin' => env('STUDENT_LINKEDIN', 'https://linkedin.com/in/mikailibraa'),
         'avatar_initials' => 'MI',
         'bio' => 'Computer Science student with a growing focus on system architecture, organizational strategy, and applied AI. Interested in System Architecture and the design of structured, scalable systems. Currently developing the Security Agent Harness, a local-first agentic security investigation system.',
-        
+
         // Competencies categorized cleanly without arbitrary percentages
         'competencies_soft' => [
             ['name' => 'Public Speaking', 'level' => 'Core', 'desc' => 'Komunikasi publik, presentasi teknis, dan penyampaian gagasan secara persuasif.'],
@@ -59,13 +59,13 @@ return [
                 'title' => 'Finalis GEMASTIK 2026 — Karya Tulis Ilmiah',
                 'category' => 'Kompetisi Ilmiah Nasional',
                 'badge' => 'GEMASTIK 2026',
-                'desc' => 'Berhasil lolos sebagai finalis pada kategori Karya Tulis Ilmiah (KTI) dalam ajang Pagelaran Mahasiswa Nasional Bidang Teknologi Informasi dan Komunikasi (GEMASTIK) 2026.'
+                'desc' => 'Berhasil lolos sebagai finalis pada kategori Karya Tulis Ilmiah (KTI) dalam ajang Pagelaran Mahasiswa Nasional Bidang Teknologi Informasi dan Komunikasi (GEMASTIK) 2026.',
             ],
             [
                 'title' => 'Founder of KIBRA Shop — ~2K MRR',
                 'category' => 'Digital Venture',
                 'badge' => '~2K MRR',
-                'desc' => 'Mendirikan dan mengembangkan usaha digital KIBRA Shop dengan traksi operasional mencapai kisaran ~2K MRR.'
+                'desc' => 'Mendirikan dan mengembangkan usaha digital KIBRA Shop dengan traksi operasional mencapai kisaran ~2K MRR.',
             ],
         ],
     ],
@@ -88,9 +88,9 @@ return [
         'type' => 'CLI Application & Investigation Harness',
         'status' => 'Functional Vertical Slice (Active Development)',
         'version' => 'v0.1.0-slice',
-        
+
         'problem' => 'Investigasi insiden keamanan sering kali terhambat oleh keharusan memilih antara analisis manual yang lambat atau otomasi AI "black-box" yang tidak terkendali, berisiko melanggar batas otorisasi (out-of-scope), dan sulit diaudit ulang.',
-        
+
         'objective' => 'Menghadirkan harness investigasi keamanan berbasis model lokal yang memungkinkan LLM mengusulkan kebutuhan analisis (probabilistic brain), sementara harness memegang kontrol mutlak atas izin eksekusi, penegakan kebijakan, pemilihan provider tools, penanganan artefak bukti, dan auditabilitas replay (deterministic spine).',
 
         // Core conceptual architectural pillars
